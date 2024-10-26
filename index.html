@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZeroShotSVC Demo</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #backToTop {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none; /* 初始隐藏 */
+        }
+        
+        #backToTop:hover {
+            background-color: #0056b3;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .hero {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .hero h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .hero p {
+            font-size: 1.2em;
+        }
+        .section {
+            margin: 20px 0;
+        }
+        .section h2 {
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        .section p {
+            font-size: 1.1em;
+        }
+        .demo-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .demo-controls button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .demo-controls button:hover {
+            background-color: #555;
+        }
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background: #333;
+            color: #fff;
+        }
+        table { margin: 20px auto; border-collapse: collapse; width: 80%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        audio { width: 100%; } /* Adjust audio player size */
+    </style>
+</head>
+<body>
+
+    <button id="backToTop">Back to Top</button>
+
+    <script>
+        const backToTopButton = document.getElementById('backToTop');
+
+        window.onscroll = function() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                backToTopButton.style.display = "block";
+            } else {
+                backToTopButton.style.display = "none";
+            }
+        };
+
+        backToTopButton.onclick = function() {
+            document.body.scrollTop = 0; // 对于 Safari
+            document.documentElement.scrollTop = 0; // 对于 Chrome, Firefox, IE 和 Opera
+        };
+    </script>
+
+    <header>
+        <div class="container">
+            <h1>Zero-Shot Sing Voice Conversion: a case study in embedding-based and token-based system</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="hero">
+            <h1 id="abstract">Abstract</h1>
+            <p style="text-align: justify;">
+                This study compares the sing voice conversion (SVC) system using embeddings extracted from SSL models and the subsequent discretized token representations. 
+                In the embedding-based experiments, we found that the number of samples per singer in the training data affects the degree of timbre leakage in the SVC model. 
+                Many previously considered effective methods for preventing timbre leakage warrant further examination regarding their specific performance sources. 
+                Additionally, we proposed an SVC system utilizing token representations, clustering vast amounts of data into a large codebook to extract phoneme representations that separate timbre information. 
+                We preliminarily explored the impact of the SSL model layer depth on phoneme representations and investigated how the number of codebooks affects the richness of these representations. 
+                Furthermore, this research advances zero-shot SVC and sets the stage for future work on discrete speech representation, emphasizing the preservation of rhyme.
+            </p>
+            <img src="Images/demo.png" alt="Invox Overview" width="900" />
+            <h2 style="text-align: left;"><strong>Table of Contents</strong></h2>
+            <ol style="text-align: left;">
+                <li><a href="#abstract" style="font-size: 20px;">Abstract</a></li>
+                <li><a href="#statement" style="font-size: 20px;">Notes</a></li>
+                <li><a href="#final" style="font-size: 20px;">Final Result</a></li>
+                <li><a href="#ab1" style="font-size: 20px;">Ablation study 1</a></li>
+                <li><a href="#ab2" style="font-size: 20px;">Ablation study 2</a></li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2 id="statement">Notes</h2>
+            <p>
+                <li>All models were trained with the AdamW optimizer on 8 A100 GPUs, using a mini-batch size of 80 for 100,000 steps.</li> 
+                <li>We utilized an internal dataset consisting of 200 hours of singing in Chinese from 10,000 non-professional singers, with each singer contributing about one minute of singing.</li>
+                <li>The source and target samples used for inference both contain noise.</li>
+            </p>
+        </div>
+
+        <div class="section">
+            <h2 id="final">Final Result</h2>
+            <!-- <p>
+                <li>The token-based approach exhibits slight variations in pronunciation and intonation in the source WAV file. For example, the final light "t" and "k" in the English samples cannot be pronounced correctly. And Vietnamese songs are also sung in a somewhat unclear manner.</li>
+                <li>In languages not included in the training set, our proposed Mono2PolySVC system demonstrates strong content reconstruction and voice conversion capabilities.</li>
+            </p> -->
+            <table style="margin-top: 20px;">
+                <tr><th></th><th>Target Speaker</th><th>Source Wav</th><th>Final Result</th></tr>
+                <tr><td rowspan="2">Our Proposal <br> H22+KM4096</td><td rowspan="4"><audio controls src="Samples/045_17_0.wav"></audio></td><td><audio controls src="Samples/1759092_2975658733737046806_done_5_16k (2).wav"></audio></td><td><audio controls src="Samples/vc_1759092_2975658733737046806_done_5_16k (17).wav"></audio></td></tr>
+                <tr><td><audio controls src="Samples/1774425_2710217281578001017_0_done_1_16k (1).wav"></audio></td><td><audio controls src="Samples/vc_1774425_2710217281578001017_0_done_1_16k (16).wav"></audio></td></tr>
+                <tr><td rowspan="2"> NeuCoSVC </td><td><audio controls src="Samples/1759092_2975658733737046806_done_5_16k (2).wav"></audio></td><td><audio controls src="Samples/ne_1759092_2975658733737046806_done_5.wav"></audio></td></tr>
+                <tr><td><audio controls src="Samples/1774425_2710217281578001017_0_done_1_16k (1).wav"></audio></td><td><audio controls src="Samples/ne_1774425_2710217281578001017_0_done_1.wav"></audio></td></tr>
+                
+                <!-- <tr><td rowspan="2">ContentVC <br> +SO-VITS-SVC </td><td><audio controls src="Samples/1759092_2975658733737046806_done_5_16k (2).wav"></audio></td><td><audio controls src="1759532_4319384471748959939_done_0_16k (2).wav"></audio></td><td><audio controls src="audio3.mp3"></audio></td></tr>
+                <tr><td><audio controls src="Samples/1774425_2710217281578001017_0_done_1_16k (1).wav"></audio></td><td><audio controls src="audio6.mp3"></audio></td><td><audio controls src="audio7.mp3"></audio></td></tr>
+                <tr><td rowspan="2">FreeVC</td><td><audio controls src="Samples/1759092_2975658733737046806_done_5_16k (2).wav"></audio></td><td><audio controls src="audio10.mp3"></audio></td><td><audio controls src="audio11.mp3"></audio></td></tr>
+                <tr><td><audio controls src="Samples/1774425_2710217281578001017_0_done_1_16k (1).wav"></audio></td><td><audio controls src="audio14.mp3"></audio></td><td><audio controls src="audio15.mp3"></audio></td></tr> -->
+            </table>
+              
+        </div>
+
+        <div class="section">
+            <h2 id="ab1">Ablation study 1</h2>
+            <p>
+                <li>A dataset with a higher number of samples per speaker improves the model's ability to minimize timbre leakage. However, in datasets with massive user samples where each speaker has only 1-2 samples, the problem of timbre leakage becomes significantly prominent.</li>
+            </p>
+
+            <table>
+                <tr><th></th><th>Target Speaker</th><th>Source Wav</th><th>result with pitch-convert</th><th>result without pitch-convert</th></tr>
+                <tr><td rowspan="2">Dataset A</td><td rowspan="4"><audio controls src="Samples/andy2.wav"></audio></td><td><audio controls src="Samples/1759092_2975658733737046806_done_5_16k (2).wav"></audio></td><td><audio controls src="Samples/vc_1759092_2975658733737046806_done_5_16k (8).wav"></audio></td><td><audio controls src="Samples/vc_1759092_2975658733737046806_done_5_16k (7).wav"></audio></td></tr>
+                <tr><td><audio controls src="Samples/1774425_2710217281578001017_0_done_1_16k (1).wav"></audio></td><td><audio controls src="Samples/vc_1774425_2710217281578001017_0_done_1_16k (7).wav"></audio></td><td><audio controls src="Samples/vc_1774425_2710217281578001017_0_done_1_16k (6).wav"></audio></td></tr>
+                <tr><td rowspan="2">Dataset B</td><td><audio controls src="Samples/1759092_2975658733737046806_done_5_16k (2).wav"></audio></td><td><audio controls src="Samples/vc_1759092_2975658733737046806_done_5_16k (10).wav"></audio></td><td><audio controls src="Samples/vc_1759092_2975658733737046806_done_5_16k (9).wav"></audio></td></tr>
+                <tr><td><audio controls src="Samples/1774425_2710217281578001017_0_done_1_16k (1).wav"></audio></td><td><audio controls src="Samples/vc_1774425_2710217281578001017_0_done_1_16k (9).wav"></audio></td><td><audio controls src="Samples/vc_1774425_2710217281578001017_0_done_1_16k (8).wav"></audio></td></tr>
+                <tr><td rowspan="2">KM4096+DatasetB</td><td rowspan="4"><audio controls src="Samples/045_17_0.wav"></audio></td><td><audio controls src="Samples/1759092_2975658733737046806_done_5_16k (2).wav"></audio></td><td><audio controls src="Samples/vc_1759092_2975658733737046806_done_5_16k (11).wav"></audio></td><td><audio controls src="Samples/vc_1759092_2975658733737046806_done_5_16k (12).wav"></audio></td></tr>
+                <tr><td><audio controls src="Samples/1774425_2710217281578001017_0_done_1_16k (1).wav"></audio></td><td><audio controls src="Samples/vc_1774425_2710217281578001017_0_done_1_16k (10).wav"></audio></td><td><audio controls src="Samples/vc_1774425_2710217281578001017_0_done_1_16k (11).wav"></audio></td></tr>
+            </table>
+            
+        </div>
+
+        <div class="section">
+            <h2 id="ab1">Ablation study 2</h2>
+            <p>
+                <li>Our proposed method can resolve the timbre leakage issue, but it is necessary to determine which layer of HuBERT features to use.</li>
+            </p>
+
+            <table style="margin-top: 20px;">
+                <tr><th></th><th>Source Wav</th><th>Sing reconstructed only by Hubert features</th></tr>
+                <tr><td rowspan="2">H22</td><td><audio controls src="Samples/1759092_2975658733737046806_done_5_16k (2).wav"></audio></td><td><audio controls src="Samples/reco_1759092_2975658733737046806_done_5_16k (5).wav"></audio></td></tr>
+                <tr><td><audio controls src="Samples/1774425_2710217281578001017_0_done_1_16k (1).wav"></audio></td><td><audio controls src="Samples/reco_1774425_2710217281578001017_0_done_1_16k (4).wav"></audio></td></tr>
+                <tr><td rowspan="2">H24</td><td><audio controls src="Samples/1759092_2975658733737046806_done_5_16k (2).wav"></audio></td><td><audio controls src="Samples/reco_1759092_2975658733737046806_done_5_16k (4).wav"></audio></td></tr>
+                <tr><td><audio controls src="Samples/1774425_2710217281578001017_0_done_1_16k (1).wav"></audio></td><td><audio controls src="Samples/reco_1774425_2710217281578001017_0_done_1_16k (5).wav"></audio></td></tr>
+              </table>
+              <table style="margin-top: 20px;">
+                <tr><th></th><th>Target Speaker</th><th>Source Wav</th><th>result with pitch-convert</th><th>result without pitch-convert</th></tr>
+                <tr><td rowspan="2">H22+KM4096</td><td rowspan="6"><audio controls src="Samples/045_17_0.wav"></audio></td><td><audio controls src="Samples/1759092_2975658733737046806_done_5_16k (2).wav"></audio></td><td><audio controls src="Samples/vc_1759092_2975658733737046806_done_5_16k (13).wav"></audio></td><td><audio controls src="Samples/vc_1759092_2975658733737046806_done_5_16k (14).wav"></audio></td></tr>
+                <tr><td><audio controls src="Samples/1774425_2710217281578001017_0_done_1_16k (1).wav"></audio></td><td><audio controls src="Samples/vc_1774425_2710217281578001017_0_done_1_16k (12).wav"></audio></td><td><audio controls src="Samples/vc_1774425_2710217281578001017_0_done_1_16k (13).wav"></audio></td></tr>
+                <tr><td rowspan="2">H24+KM4096</td><td><audio controls src="Samples/1759092_2975658733737046806_done_5_16k (2).wav"></audio></td><td><audio controls src="Samples/vc_1759092_2975658733737046806_done_5_16k (15).wav"></audio></td><td><audio controls src="Samples/vc_1759092_2975658733737046806_done_5_16k (16).wav"></audio></td></tr>
+                <tr><td><audio controls src="Samples/1774425_2710217281578001017_0_done_1_16k (1).wav"></audio></td><td><audio controls src="Samples/vc_1774425_2710217281578001017_0_done_1_16k (14).wav"></audio></td><td><audio controls src="Samples/vc_1774425_2710217281578001017_0_done_1_16k (15).wav"></audio></td></tr>
+              </table>
+            
+        </div>
+
+
+
+        
+
+        
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Mono2PolySVC Demo. All rights reserved.</p>
+    </footer>
+
+    <!-- <script>
+        function generateMusic() {
+            alert("Music generation functionality is not yet implemented.");
+        }
+    </script> -->
+</body>
+</html>
+
